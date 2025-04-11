@@ -1,14 +1,19 @@
-from fastapi import FastAPI
-from .models.books import Book
-from .data.books import books
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from .routers import books
+
 app = FastAPI()
-@app.get ("/books")
-def get_all_books() -> list[Book]: # -> list[Book] è un'annotazione per indicare che restituirà una lista utilizzato da pydantic come controllo del typing
-    '''Returns the list of available books.'''
+app.include_router(books.router, tags=["books"]) #il campo tags riporta il nome dell'endpoint (serve per la docs)
 
-    # Restituiamo una lista dei valori perché restituire solamente i valori senza convertire in una lista rende
-    # impossibile la trasformazione a json, in quanto l'oggetto restituito sarebbe dict_values (che FastAPI non può
-    # serializzare).
+templates = Jinja2Templates(directory="app/templates")
 
-    return list(books.values())
+@app.get("/", response_class=HTMLResponse, tags=["HTML Responses"])
+def home(request: Request): # Aggiungiamo il parametro alla funzione in modo che la funzione riceva la richiesta http
+    '''Returns the home page.'''
 
+
+    # Ovviamente lavorare con python in stringhe è abominevole, quindi si restituiscono i file HTML nella cartella templates.
+    return templates.TemplateResponse(
+        name = "home.html", request =request
+    ) #TODO: Comprendere perché è così 💀

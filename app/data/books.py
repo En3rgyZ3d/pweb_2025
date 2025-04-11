@@ -1,4 +1,4 @@
-from ..models.books import Book
+from ..models.book import Book
 
 books = {
     0: Book(id=0, title="The Hobbit", author="ciao1", review=4),
