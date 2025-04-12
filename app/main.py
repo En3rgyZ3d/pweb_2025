@@ -16,4 +16,4 @@ def home(request: Request): # Aggiungiamo il parametro alla funzione in modo che
     # Ovviamente lavorare con python in stringhe è abominevole, quindi si restituiscono i file HTML nella cartella templates.
     return templates.TemplateResponse(
         name = "home.html", request =request
-    ) #TODO: Comprendere perché è così 💀
+    )
