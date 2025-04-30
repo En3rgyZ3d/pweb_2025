@@ -1,9 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Testiamo sta roba</title>
-</head>
-<h1>Testing this app</h1>
-<body>Ciao a todos</body>
-</html>
+      {% extends "base.html" %}
+      {% block content %}
+            <!--
+            <h3 style = "text-align: center">{{ text }}</h3> Le doppie graffe servono ad indicare a jinja2 che lì ci sarà una variabile
+            Se stampo così, il dizionario viene convertito in stringa-->
+
+            <div style = "text-align: center">
+                <h1>{{text.title}}</h1> <!--Posso accedere agli attributi di qualsiasi oggetto Python-->
+                <p>{{text.content}}</p>
+                <img src="{{url_for('static', path='library.jpg')}}" alt="Library"> <!-- url_for crea dinamicamente il link per le risorse-->
+            </div>
+      <!--
+      Si possono creare i cicli for con Jinja2
+      {%for word in sequence%}
+            <p>{{word}}</p>
+      {%endfor%}
+      -->
+
+
+
+      {% endblock %}
