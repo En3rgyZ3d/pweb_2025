@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Path, HTTPException, Query
+from fastapi import APIRouter, Path, HTTPException, Query, Form
 from pydantic import ValidationError
 
 from ..models.book import Book
@@ -91,3 +91,12 @@ def delete_book_by_id(
         return "Book deleted successfully"
     except KeyError:
         raise HTTPException(status_code=404, detail="Book not found")
+
+
+@router.post("_/form")
+def add_book_from_form(book: Annotated[Book, Form()]):
+    '''Adds a new book from a form.'''
+    if book.id in books:
+        raise HTTPException(status_code=403, detail="Book ID already exists")
+    books[book.id] = book
+    return "Book added successfully"

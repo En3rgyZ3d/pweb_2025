@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from ..data.books import books
-
+from .books import get_all_books
 router = APIRouter() # Parte dal root principale, quindi non mettiamo i prefix
 
 templates = Jinja2Templates(directory="templates")
@@ -33,9 +33,17 @@ def home(request: Request): # Aggiungiamo il parametro alla funzione in modo che
 def show_book_list(request: Request):
     '''Returns the book list page.'''
 
-    context = list(books.values())
-
+    #context = list(books.values())
+    context = get_all_books()
     return templates.TemplateResponse(
         name="list.html", request =request,
         context={"books": context}
+    )
+
+
+@router.get("/add_book", response_class=HTMLResponse)
+def add_book_form(request: Request):
+    '''Returns the add book form.'''
+    return templates.TemplateResponse(
+        request=request, name="add.html"
     )
