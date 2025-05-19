@@ -1,3 +1,5 @@
 fastapi[standard]
 requests
 pydantic
+sqlmodel
+Faker
