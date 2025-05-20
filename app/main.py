@@ -3,7 +3,7 @@ from starlette.staticfiles import StaticFiles
 
 from .routers import books, frontend
 from contextlib import asynccontextmanager
-from data.db import init_database
+from .data.db import init_database
 
 @asynccontextmanager
 async def lifespan (app: FastAPI):

@@ -2,9 +2,9 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from .books import get_all_books
-from data.db import SessionDep
+from ..data.db import SessionDep
 from sqlmodel import select
-from models.book import Book
+from ..models.book import Book
 
 
 router = APIRouter() # Parte dal root principale, quindi non mettiamo i prefix
@@ -38,8 +38,8 @@ def show_book_list(request: Request, session: SessionDep):
     books = session.exec(select(Book)).all()
     '''Returns the book list page.'''
 
-    #context = list(books.values())
-    context = get_all_books()
+    context = books
+    #context = get_all_books(session)
     return templates.TemplateResponse(
         name="list.html", request =request,
         context={"books": context}

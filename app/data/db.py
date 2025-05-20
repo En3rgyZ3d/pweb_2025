@@ -5,13 +5,13 @@ from faker import Faker
 import os
 from ..models.book import Book
 
-sqlite_file_name = "app/data/database.db"
+sqlite_file_name = "data/database.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 connect_args = {"check_same_thread": False}
 engine = create_engine(sqlite_url, connect_args=connect_args, echo=True)
 
 def init_database() -> None:
-    ds_exists = os.path.isfile("app/data/database.db")
+    ds_exists = os.path.isfile("data/database.db")
     SQLModel.metadata.create_all(engine)
     if not ds_exists:
         f = Faker("it_IT")

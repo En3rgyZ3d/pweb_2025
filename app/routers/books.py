@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Path, HTTPException, Query, Form
-from pydantic import ValidationError
+#from pydantic import ValidationError
 
-from ..models.book import Book
+from ..models.book import Book, BookCreate, BookPublic
 from ..models.review import Review
 from typing import Annotated
-from models.book import Book, BookCreate, BookPublic
-from data.db import SessionDep
-from sqlmodel import select
+from ..data.db import SessionDep
+from sqlmodel import select,delete
 
 router = APIRouter(prefix="/books")
 
@@ -47,7 +46,7 @@ def add_review(
     """Adds a review to the book with the given ID."""
     book = session.get(Book, id)
     if not book:
-        raise HTTPException(status_code=404,detail="Booknotfound")
+        raise HTTPException(status_code=404,detail="Book not found")
     book.review = review.review
     session.commit()
     return "Review successfully added"
@@ -79,7 +78,7 @@ def update_book(
 @router.delete("/")
 def delete_all_books(session: SessionDep):
     """Deletes all the stored books."""
-    session.exec(select(Book)).delete()
+    session.exec(delete(Book))
     session.commit()
     return "All books successfully deleted"
 @router.delete("/{id}")
