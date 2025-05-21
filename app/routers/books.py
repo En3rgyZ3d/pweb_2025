@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Path, HTTPException, Query, Form
+from fastapi import APIRouter, Path, HTTPException, Query, Form, UploadFile
 #from pydantic import ValidationError
+from fastapi.responses import StreamingResponse, FileResponse
+from io import BytesIO
 
 from ..models.book import Book, BookCreate, BookPublic
 from ..models.review import Review
 from typing import Annotated
-from ..data.db import SessionDep
+from ..data.db import SessionDep,sqlite_file_name
 from sqlmodel import select,delete
 
 router = APIRouter(prefix="/books")
@@ -24,6 +26,40 @@ def get_all_books(
         return sorted(list(books.values()), key=lambda book: book.review) # Se vero, restituiamo una lista ordinata per book review
     else:
         return list(books.values())
+
+@router.get("/{id}/download", response_class=StreamingResponse)
+async def download_book(
+        session: SessionDep,
+        id: Annotated[int, Path(description="The ID of the book to download")]
+):
+    """Downloads the book with the given ID."""
+    book = session.get(Book, id)
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    buffer = BytesIO(book.model_dump_json().encode("utf-8"))
+    headers = {"Content-Disposition": f"attachment; filename={book.title}.json"}
+    return StreamingResponse(buffer, headers=headers,media_type="application/octet-stream")
+
+@router.get("/download_db", response_class=FileResponse)
+async def download_db():
+    """Returns the DB file"""
+    headers= {"Content-Disposition": f"attachment; filename=database.db"}
+    return FileResponse(sqlite_file_name, headers=headers)
+
+
+@router.post("_file/")
+async def add_book_from_file(
+    session: SessionDep,
+    file: UploadFile,
+):
+    """Adds a new book."""
+    try:
+        book = await file.read()
+        session.add(Book.model_validate_json(book))
+        session.commit()
+        return"Book successfully added"
+    except:
+        raise HTTPException(400, detail="Invalid file")
 
 @router.get("/{id}")
 def get_book_by_id(
@@ -81,6 +117,7 @@ def delete_all_books(session: SessionDep):
     session.exec(delete(Book))
     session.commit()
     return "All books successfully deleted"
+
 @router.delete("/{id}")
 def delete_book(
     session: SessionDep,
@@ -103,3 +140,5 @@ def add_book_from_form(
     session.add(Book.model_validate(book))
     session.commit()
     return "Book successfully added"
+
+
