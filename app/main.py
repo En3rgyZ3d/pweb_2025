@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from starlette.staticfiles import StaticFiles
 
-from .routers import books, frontend
+from .routers import books, frontend,users
 from contextlib import asynccontextmanager
 from .data.db import init_database
 
@@ -16,6 +16,8 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(books.router, tags=["books"]) #il campo tags riporta il nome dell'endpoint (serve per la docs)
 
 app.include_router(frontend.router, tags=["frontend"])
+app.include_router(users.router, tags=["users"])
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 # il primo parametro è l'url della web app dove possono essere recuperate le risorse
 # il secondo è il percorso della cartella dove si possono recuperare i file
